@@ -1,17 +1,24 @@
 namespace SpriteKind {
     export const points = SpriteKind.create()
 }
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (Shroom.vy == 0) {
-        Shroom.vy = -150
-    }
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function (sprite, location) {
+    game.gameOver(true)
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile1`, function (sprite, location) {
+    game.gameOver(false)
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (Shroom.vy == 0) {
-        Shroom.vy = -150
+    if (Fermi.vy == 0) {
+        Fermi.vy = -150
     }
 })
-let Shroom: Sprite = null
+controller.player2.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Pressed, function () {
+    if (Dermi.vy == 0) {
+        Dermi.vy = -150
+    }
+})
+let Dermi: Sprite = null
+let Fermi: Sprite = null
 scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -134,7 +141,7 @@ scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     `)
-Shroom = sprites.create(img`
+Fermi = sprites.create(img`
     . . . . 2 2 2 2 2 2 2 . . . . . 
     . . . 2 2 2 2 2 2 2 2 2 2 . . . 
     . . 1 2 2 2 2 1 1 2 2 2 2 1 . . 
@@ -148,11 +155,33 @@ Shroom = sprites.create(img`
     . . . d d d d d d d d d d . . . 
     . . . d d f 1 d d f 1 d d . . . 
     . . . d d f f d d f f d d . . . 
-    . . . d d d d d d d d d d . . . 
+    . . . d 3 d d d d d d 3 d . . . 
     . . . d d d d d d d d d d . . . 
     . . . d d d d d d d d d d . . . 
     `, SpriteKind.Player)
-controller.moveSprite(Shroom)
-Shroom.ay = 350
+Dermi = sprites.create(img`
+    . . . . . 5 5 5 5 5 5 . . . . . 
+    . . 5 5 5 5 5 5 5 5 5 5 5 5 . . 
+    . 5 5 5 5 5 5 1 1 5 5 5 5 5 5 . 
+    . 1 5 5 5 5 1 1 1 1 5 5 5 5 1 . 
+    1 1 1 5 5 1 1 1 1 1 1 5 5 1 1 1 
+    1 1 1 5 5 1 1 1 1 1 1 5 5 1 1 1 
+    1 1 1 5 5 5 1 1 1 1 5 5 5 1 1 1 
+    1 5 5 5 5 5 5 1 1 5 5 5 5 5 5 1 
+    5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 
+    5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 
+    . . . d d d d d d d d d d . . . 
+    . . . d d f d d d d f d d . . . 
+    . . . d d 1 d d d d 1 d d . . . 
+    . . . d 3 d d d d d d 3 d . . . 
+    . . . d d d d d d d d d d . . . 
+    . . . d d d d d d d d d d . . . 
+    `, SpriteKind.Player)
+controller.moveSprite(Fermi, 100, 0)
+controller.player2.moveSprite(Dermi, 100, 0)
 tiles.setCurrentTilemap(tilemap`level1`)
-scene.cameraFollowSprite(Shroom)
+Fermi.ay = 350
+Dermi.ay = 350
+scene.cameraFollowSprite(Fermi)
+Fermi.sayText("HI!I AM FERMI!", 2000, false)
+Fermi.sayText("HI!I AM DERMI!", 2000, false)
