@@ -1,27 +1,15 @@
 namespace SpriteKind {
     export const points = SpriteKind.create()
 }
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function (sprite, location) {
-    game.gameOver(true)
-    game.setGameOverEffect(true, effects.confetti)
-})
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile1`, function (sprite, location) {
-    game.gameOver(false)
-    game.setGameOverEffect(false, effects.bubbles)
-})
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (Shroom.x == 0) {
-        Shroom.vy = -250
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (Shroom.vy == 0) {
+        Shroom.vy = -150
     }
 })
-sprites.onOverlap(SpriteKind.Player, SpriteKind.points, function (sprite, otherSprite) {
-    info.changeScoreBy(1)
-})
-scene.onOverlapTile(SpriteKind.Player, assets.tile`transparency16`, function (sprite, location) {
-	
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
-    info.changeLifeBy(-1)
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (Shroom.vy == 0) {
+        Shroom.vy = -150
+    }
 })
 let Shroom: Sprite = null
 scene.setBackgroundImage(img`
@@ -158,72 +146,13 @@ Shroom = sprites.create(img`
     2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
     2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
     . . . d d d d d d d d d d . . . 
-    . . . d d f f d d f f d d . . . 
+    . . . d d f 1 d d f 1 d d . . . 
     . . . d d f f d d f f d d . . . 
     . . . d d d d d d d d d d . . . 
     . . . d d d d d d d d d d . . . 
     . . . d d d d d d d d d d . . . 
     `, SpriteKind.Player)
-let Hamilton = sprites.create(img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . 8 8 8 8 8 8 8 8 . . . . 
-    . . . . 8 f f 8 8 f f 8 . . . . 
-    . . . . 8 8 8 5 5 8 8 8 . . . . 
-    . . . . 8 8 8 5 5 8 8 8 . . . . 
-    . . . . . 8 8 8 8 8 8 . . . . . 
-    . . . . 8 8 8 8 8 8 8 8 . . . . 
-    . . . 8 8 8 8 8 8 8 8 8 8 . . . 
-    . . . 8 8 8 f 8 8 f 8 8 8 . . . 
-    . . . 8 8 f f 8 8 f f 8 8 . . . 
-    . . . 8 8 f 8 8 8 8 f 8 8 . . . 
-    . . . 8 8 8 8 8 8 8 8 8 8 . . . 
-    . . . . 8 8 8 8 8 8 8 8 . . . . 
-    . . . . . 8 8 8 8 8 8 . . . . . 
-    . . . . . . 8 8 8 8 . . . . . . 
-    `, SpriteKind.Enemy)
-let MultiUniverseCoins = sprites.create(img`
-    . . . . . . . 1 1 . . . . . . . 
-    . . . . . . 1 5 5 1 . . . . . . 
-    . . . . . 1 5 5 5 5 1 . . . . . 
-    . . . . 1 5 5 5 5 5 5 1 . . . . 
-    1 1 1 1 1 5 5 5 5 5 5 1 1 1 1 1 
-    1 5 5 5 5 5 5 5 5 5 5 5 5 5 5 1 
-    5 5 5 5 5 f 5 5 5 f 5 5 5 5 5 5 
-    1 5 5 5 5 5 5 5 5 5 5 5 5 5 5 1 
-    . 1 5 5 5 5 5 5 5 5 5 5 5 5 1 . 
-    . . 1 1 5 5 5 5 5 5 5 5 1 1 . . 
-    . . . 1 5 5 5 5 5 5 5 5 1 . . . 
-    . . 1 5 5 5 5 5 5 5 5 5 5 1 . . 
-    . 1 5 5 5 5 5 5 5 5 5 5 5 5 1 . 
-    1 5 5 5 5 1 1 1 1 1 1 5 5 5 5 1 
-    5 5 5 1 1 1 . . . . 1 1 1 5 5 5 
-    5 5 1 . . . . . . . . . . 1 5 5 
-    `, SpriteKind.points)
-tiles.setCurrentTilemap(tilemap`level1`)
-controller.moveSprite(Shroom, 100, 100)
-Shroom.setPosition(13, 13)
-Hamilton.setPosition(79, 58)
-info.setLife(5)
-info.setScore(0)
-scene.cameraFollowSprite(Shroom)
+controller.moveSprite(Shroom)
 Shroom.ay = 350
-if (Shroom.overlapsWith(Hamilton)) {
-    info.changeLifeBy(-1)
-}
-if (Shroom.overlapsWith(MultiUniverseCoins)) {
-    info.changeScoreBy(1)
-}
-forever(function () {
-    Hamilton.x += 1
-    Hamilton.x += 1
-    Hamilton.x += 1
-    Hamilton.x += 1
-    Hamilton.x += 1
-    pause(5000)
-    Hamilton.x += -1
-    Hamilton.x += -1
-    Hamilton.x += -1
-    Hamilton.x += -1
-    Hamilton.x += -1
-})
+tiles.setCurrentTilemap(tilemap`level1`)
+scene.cameraFollowSprite(Shroom)
