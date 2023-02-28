@@ -3,9 +3,11 @@ namespace SpriteKind {
 }
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function (sprite, location) {
     game.gameOver(true)
+    game.setGameOverEffect(true, effects.confetti)
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile1`, function (sprite, location) {
     game.gameOver(false)
+    game.setGameOverEffect(false, effects.bubbles)
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Fermi.vy == 0) {
@@ -17,6 +19,22 @@ controller.player2.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Press
         Dermi.vy = -150
     }
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.points, function (sprite, otherSprite) {
+    info.changeScoreBy(1)
+    sprites.destroy(otherSprite)
+})
+controller.player3.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Pressed, function () {
+    if (Lermi.vy == 0) {
+        Lermi.vy = -150
+    }
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    info.changeLifeBy(-1)
+    sprites.destroy(Dermi)
+    sprites.destroy(Fermi)
+})
+let Seeds: Sprite = null
+let Lermi: Sprite = null
 let Dermi: Sprite = null
 let Fermi: Sprite = null
 scene.setBackgroundImage(img`
@@ -171,17 +189,82 @@ Dermi = sprites.create(img`
     5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 
     5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 
     . . . d d d d d d d d d d . . . 
-    . . . d d f d d d d f d d . . . 
-    . . . d d 1 d d d d 1 d d . . . 
+    . . . d d f 1 d d f 1 d d . . . 
+    . . . d d f f d d f f d d . . . 
     . . . d 3 d d d d d d 3 d . . . 
     . . . d d d d d d d d d d . . . 
     . . . d d d d d d d d d d . . . 
     `, SpriteKind.Player)
+Lermi = sprites.create(img`
+    . . . . . . a a a a . . . . . . 
+    . . . . a a a a a a a a . . . . 
+    . 1 1 a a a a a a a a a a 1 1 . 
+    1 1 a a a a a 1 1 a a a a a 1 1 
+    1 1 1 a a a 1 1 1 1 a a a 1 1 1 
+    1 1 1 a a 1 1 1 1 1 1 a a 1 1 1 
+    1 a a a a 1 1 1 1 1 1 a a a a 1 
+    a a a a a a 1 1 1 1 a a a a a a 
+    a a a a a a a 1 1 a a a a a a a 
+    a a a a a a a a a a a a a a a a 
+    . . . d d d d d d d d d . . . . 
+    . . . d f 1 d d d f 1 d . . . . 
+    . . . d f f d d d f f d . . . . 
+    . . . d d d d d d d d d . . . . 
+    . . . 3 d d d d d d d 3 . . . . 
+    . . . d d d d d d d d d . . . . 
+    `, SpriteKind.Player)
+let Hamilton = sprites.create(img`
+    . . . . 8 8 8 8 8 8 8 8 . . . . 
+    . . . . 8 1 f 8 8 f 1 8 . . . . 
+    . . . . 8 f 8 5 5 8 f 8 . . . . 
+    . . . . 8 8 8 5 5 8 8 8 . . . . 
+    . . . . . 8 8 8 8 8 8 . . . . . 
+    . . . . 8 8 8 8 8 8 8 8 . . . . 
+    . . . 8 8 8 8 8 8 8 8 8 8 . . . 
+    . . . 8 8 1 1 8 8 1 1 8 8 . . . 
+    . . 8 8 8 8 8 1 1 8 8 8 8 8 . . 
+    . . . 8 8 8 8 8 8 8 8 8 8 . . . 
+    . . . 8 8 8 8 8 8 8 8 8 8 . . . 
+    . . . . 8 8 8 8 8 8 8 8 . . . . 
+    . . . . 8 8 8 8 8 8 8 8 . . . . 
+    . . . . 8 8 8 8 8 8 8 8 . . . . 
+    . . . . . 8 8 8 8 8 8 . . . . . 
+    . . . . . . 8 8 8 8 . . . . . . 
+    `, SpriteKind.Enemy)
+Fermi.setPosition(13, 13)
+Fermi.setPosition(15, 13)
+Hamilton.setPosition(45, 24)
 controller.moveSprite(Fermi, 100, 0)
 controller.player2.moveSprite(Dermi, 100, 0)
+controller.player3.moveSprite(Lermi, 100, 0)
 tiles.setCurrentTilemap(tilemap`level1`)
 Fermi.ay = 350
 Dermi.ay = 350
+Lermi.ay = 350
 scene.cameraFollowSprite(Fermi)
 Fermi.sayText("HI!I AM FERMI!", 2000, false)
-Fermi.sayText("HI!I AM DERMI!", 2000, false)
+Dermi.sayText("HI!I AM DERMI!", 2000, false)
+info.setLife(5)
+Dermi.setStayInScreen(true)
+for (let value of tiles.getTilesByType(assets.tile`myTile2`)) {
+    Seeds = sprites.create(img`
+        . . . . . . . f f . . . . . . . 
+        . . . . . . e f f e . . . . . . 
+        . . . . e e f e e f e e . . . . 
+        . . . e f f e e e e f f e . . . 
+        . . e f e f e e e e f e f e . . 
+        . e e f e f e e e e f e f e e . 
+        . e e f e f e e e e f e f e e . 
+        . e e f e f e 5 1 e f e f e e . 
+        . e e f e f e 1 5 e f e f e e . 
+        . e e f e f e e e e f e f e e . 
+        . e e f e f e e e e f e f e e . 
+        . e e f e f e e e e f e f e e . 
+        . e e f e f e e e e f e f e e . 
+        . . e f e f e e e e f e f e . . 
+        . . . e f e f e e f e f e . . . 
+        . . . . e f e f f e f e . . . . 
+        `, SpriteKind.points)
+    tiles.placeOnTile(Seeds, value)
+    tiles.setTileAt(value, assets.tile`transparency16`)
+}
