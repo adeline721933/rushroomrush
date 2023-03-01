@@ -25,6 +25,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.points, function (sprite, otherS
     sprites.destroy(otherSprite)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Flower, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
     Bees = sprites.create(img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
@@ -32,18 +33,59 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Flower, function (sprite, otherS
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
-        . . . . . 5 5 f 5 f 5 f 5 . . . 
-        . . . . . 5 f 5 f 5 f 5 5 . . . 
-        . . . . . 5 f 5 f 5 f 5 5 . . . 
-        . . . . . 5 f 5 f 5 f 5 5 f . . 
-        . . . . . 5 f 5 f 5 f 5 5 . . . 
-        . . . . . 5 5 f 5 f 5 f 5 . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         `, SpriteKind.Enemy)
-    sprites.destroy(otherSprite)
+    animation.runImageAnimation(
+    Bees,
+    [img`
+        . . . f f f f f . f f f f f . . 
+        . . . f 1 1 1 1 f 1 1 1 1 f . . 
+        . . . f 1 1 1 1 f 1 1 1 1 f . . 
+        . . . f f 1 1 1 f 1 1 1 f f . . 
+        . . . . . 1 1 1 f 1 1 1 . . . . 
+        . . f f f f f f f f f f f f . . 
+        . f 5 5 5 f 5 5 5 f 5 5 5 f f . 
+        . f 5 f 1 5 5 5 f 5 5 5 f 5 f . 
+        . f 5 f 5 5 5 5 f 5 5 5 f 5 f f 
+        . f 5 5 f 5 5 5 f 5 5 5 f 5 f . 
+        . f 5 5 5 f 5 5 5 f 5 5 5 f f . 
+        . . f f f f f f f f f f f f . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . f f f f f f f f f f f f . . 
+        . f 5 5 5 f 5 5 5 f 5 5 5 f f . 
+        . f 5 f 1 5 5 5 f 5 5 5 f 5 f . 
+        . f 5 f 5 5 5 5 f 5 5 5 f 5 f f 
+        . f 5 5 f 5 5 5 f 5 5 5 f 5 f . 
+        . f 5 5 5 f 5 5 5 f 5 5 5 f f . 
+        . . f f f f f f f f f f f f . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `],
+    100,
+    true
+    )
+    Bees.setPosition(Fermi.x + 80, Fermi.y - 80)
+    Bees.follow(Dermi, 30)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
     info.changeLifeBy(1)
@@ -55,16 +97,28 @@ controller.player3.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Press
     }
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
-    info.changeLifeBy(-1)
-    sprites.destroy(Dermi)
-    sprites.destroy(Fermi)
-    sprites.destroy(Lermi)
+    sprites.destroy(otherSprite)
+    if (Fermi.y > otherSprite.y) {
+        info.changeScoreBy(2)
+    } else {
+        info.changeLifeBy(-1)
+    }
+    if (Dermi.y > otherSprite.y) {
+        info.changeScoreBy(2)
+    } else {
+        info.changeLifeBy(-1)
+    }
+    if (Lermi.y > otherSprite.y) {
+        info.changeScoreBy(2)
+    } else {
+        info.changeLifeBy(-1)
+    }
 })
 let Bees: Sprite = null
 let fertiliser: Sprite = null
 let flowers: Sprite = null
-let Seeds: Sprite = null
 let Hamilton: Sprite = null
+let Seeds: Sprite = null
 let Lermi: Sprite = null
 let Dermi: Sprite = null
 let Fermi: Sprite = null
@@ -245,8 +299,8 @@ Lermi = sprites.create(img`
     . . . d d d d d d d d d . . . . 
     `, SpriteKind.Player)
 Fermi.setPosition(13, 13)
-Fermi.setPosition(15, 13)
-Hamilton.setPosition(45, 24)
+Dermi.setPosition(15, 13)
+Lermi.setPosition(14, 13)
 controller.moveSprite(Fermi, 100, 0)
 controller.player2.moveSprite(Dermi, 100, 0)
 controller.player3.moveSprite(Lermi, 100, 0)
@@ -255,11 +309,11 @@ Fermi.ay = 350
 Dermi.ay = 350
 Lermi.ay = 350
 scene.cameraFollowSprite(Fermi)
-info.setLife(5)
-info.setScore(0)
 Lermi.setStayInScreen(true)
 Dermi.setStayInScreen(true)
-for (let Bees of tiles.getTilesByType(assets.tile`myTile2`)) {
+info.setLife(5)
+info.setScore(0)
+for (let values of tiles.getTilesByType(assets.tile`myTile2`)) {
     Seeds = sprites.create(img`
         . . . . . . . f f . . . . . . . 
         . . . . . . e f f e . . . . . . 
@@ -386,10 +440,10 @@ for (let Bees of tiles.getTilesByType(assets.tile`myTile2`)) {
     1000,
     true
     )
-    tiles.placeOnTile(Seeds, Bees)
-    tiles.setTileAt(Bees, assets.tile`transparency16`)
+    tiles.placeOnTile(Seeds, values)
+    tiles.setTileAt(values, assets.tile`transparency16`)
 }
-for (let Bees of tiles.getTilesByType(assets.tile`myTile3`)) {
+for (let values of tiles.getTilesByType(assets.tile`myTile3`)) {
     Hamilton = sprites.create(img`
         . . . . 8 8 8 8 8 8 8 8 . . . . 
         . . . . 8 1 f 8 8 f 1 8 . . . . 
@@ -408,10 +462,101 @@ for (let Bees of tiles.getTilesByType(assets.tile`myTile3`)) {
         . . . . . 8 8 8 8 8 8 . . . . . 
         . . . . . . 8 8 8 8 . . . . . . 
         `, SpriteKind.Enemy)
-    tiles.placeOnTile(Hamilton, Bees)
-    tiles.setTileAt(Bees, assets.tile`transparency16`)
+    animation.runImageAnimation(
+    Hamilton,
+    [img`
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        8 . . . 8 1 f 8 8 f 1 8 . . . 8 
+        6 8 . . 8 f 8 5 5 8 f 8 . . 8 6 
+        8 6 8 . 8 8 8 5 5 8 8 8 . 8 6 8 
+        6 8 6 8 . 8 8 8 8 8 8 . 8 6 8 6 
+        6 6 8 6 8 8 8 8 8 8 8 8 6 8 6 6 
+        8 6 6 8 8 8 8 8 8 8 8 8 8 6 6 8 
+        8 8 8 8 8 8 1 1 1 1 8 8 8 8 8 8 
+        6 6 6 8 8 8 1 8 8 1 8 8 8 6 6 6 
+        8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 
+        8 8 6 8 8 8 8 8 8 8 8 8 8 6 8 8 
+        6 6 8 . 8 8 8 8 8 8 8 8 . 8 6 6 
+        6 8 . . . 8 8 8 8 8 8 . . . 8 6 
+        8 . . . . 8 8 8 8 8 8 . . . . 8 
+        . . . . . . 8 8 8 8 . . . . . . 
+        . . . . . . . 8 8 . . . . . . . 
+        `,img`
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        8 . . . 8 1 f 8 8 f 1 8 . . . 8 
+        8 8 . . 8 f 8 5 5 8 f 8 . . 8 8 
+        8 6 8 . 8 8 8 5 5 8 8 8 . 8 6 8 
+        8 8 6 8 . 8 8 8 8 8 8 . 8 6 8 8 
+        8 6 8 6 8 8 8 8 8 8 8 8 6 8 6 8 
+        8 6 6 8 6 8 8 8 8 8 8 6 8 6 6 8 
+        8 8 6 6 8 8 1 1 1 1 8 8 6 6 8 8 
+        8 8 8 8 8 8 1 8 8 1 8 8 8 8 8 8 
+        8 6 6 6 8 8 8 8 8 8 8 8 6 6 6 8 
+        8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 
+        8 8 8 6 8 8 8 8 8 8 8 8 6 8 8 8 
+        8 6 6 8 . 8 8 8 8 8 8 . 8 6 6 8 
+        8 6 8 . . 8 8 8 8 8 8 . . 8 6 8 
+        8 8 . . . . 8 8 8 8 . . . . 8 8 
+        8 . . . . . . 8 8 . . . . . . 8 
+        `,img`
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        . 8 . . 8 1 f 8 8 f 1 8 . . 8 . 
+        . 8 8 . 8 f 8 5 5 8 f 8 . 8 8 . 
+        8 8 6 8 8 8 8 5 5 8 8 8 8 6 8 8 
+        8 8 8 6 8 8 8 8 8 8 8 8 6 8 8 8 
+        8 8 6 8 6 8 8 8 8 8 8 6 8 6 8 8 
+        8 8 6 6 8 8 8 8 8 8 6 8 6 6 8 8 
+        8 8 8 6 6 8 1 1 1 1 8 6 6 8 8 8 
+        8 8 8 8 8 8 1 8 8 1 8 8 8 8 8 8 
+        8 8 6 6 6 8 8 8 8 8 8 6 6 6 8 8 
+        8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 
+        8 8 8 8 6 8 8 8 8 8 8 6 8 8 8 8 
+        8 8 6 6 8 8 8 8 8 8 8 8 6 6 8 8 
+        8 8 6 8 . 8 8 8 8 8 8 . 8 6 8 8 
+        8 8 8 . . . 8 8 8 8 . . . 8 8 8 
+        8 8 . . . . . 8 8 . . . . . 8 8 
+        `,img`
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        . . . . 8 1 f 8 8 f 1 8 . . . . 
+        . . 8 . 8 f 8 5 5 8 f 8 . 8 . . 
+        . 8 8 8 8 8 8 5 5 8 8 8 8 8 8 . 
+        8 8 8 6 8 8 8 8 8 8 8 8 6 8 8 8 
+        8 8 8 8 6 8 8 8 8 8 8 6 8 8 8 8 
+        8 8 8 6 8 8 8 8 8 8 6 8 6 8 8 8 
+        8 8 8 6 6 8 1 1 1 1 8 6 6 8 8 8 
+        8 8 8 8 6 8 1 8 8 1 8 6 8 8 8 8 
+        8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 
+        8 8 8 6 6 8 8 8 8 8 8 6 6 8 8 8 
+        8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 
+        8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 
+        8 8 8 8 6 8 8 8 8 8 8 6 6 8 8 8 
+        8 8 8 6 8 . 8 8 8 8 . 8 6 8 8 8 
+        8 8 8 8 . . . 8 8 . . . 8 8 8 8 
+        `,img`
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        . . . . 8 1 f 8 8 f 1 8 . . . . 
+        . . . . 8 f 8 5 5 8 f 8 . . . . 
+        . . . . 8 8 8 5 5 8 8 8 . . . . 
+        . . . 8 8 8 8 8 8 8 8 8 8 . . . 
+        . . 8 8 8 8 8 8 8 8 8 8 8 8 . . 
+        . . 8 8 6 8 8 8 8 8 6 6 8 8 . . 
+        . . 8 8 8 8 1 1 1 1 8 8 8 8 . . 
+        . . 8 8 6 8 1 8 8 1 8 6 8 8 . . 
+        . . 8 8 6 8 8 8 8 8 8 6 8 8 . . 
+        . . 8 8 8 8 8 8 8 8 8 8 8 8 . . 
+        . . 8 8 8 8 8 8 8 8 8 8 8 8 . . 
+        . . 8 8 6 8 8 8 8 8 8 6 8 8 . . 
+        . . 8 8 8 8 8 8 8 8 8 8 8 8 . . 
+        . . 8 8 8 . 8 8 8 8 . 8 8 8 . . 
+        . . 8 8 8 . . 8 8 . . 6 8 8 . . 
+        `],
+    500,
+    true
+    )
+    tiles.placeOnTile(Hamilton, values)
+    tiles.setTileAt(values, assets.tile`transparency16`)
 }
-for (let Bees of tiles.getTilesByType(assets.tile`myTile4`)) {
+for (let values of tiles.getTilesByType(assets.tile`myTile4`)) {
     flowers = sprites.create(img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
@@ -430,10 +575,10 @@ for (let Bees of tiles.getTilesByType(assets.tile`myTile4`)) {
         . . 7 7 6 . . 7 7 6 6 . . . . . 
         . . . . . . . 7 6 . . . . . . . 
         `, SpriteKind.Flower)
-    tiles.placeOnTile(flowers, Bees)
-    tiles.setTileAt(Bees, assets.tile`transparency16`)
+    tiles.placeOnTile(flowers, values)
+    tiles.setTileAt(values, assets.tile`transparency16`)
 }
-for (let Bees of tiles.getTilesByType(assets.tile`myTile5`)) {
+for (let values of tiles.getTilesByType(assets.tile`myTile5`)) {
     fertiliser = sprites.create(img`
         . 2 2 2 2 . . . . . . 2 2 2 2 . 
         . 2 2 2 2 2 . . . . 2 2 2 2 2 . 
@@ -574,16 +719,17 @@ for (let Bees of tiles.getTilesByType(assets.tile`myTile5`)) {
         . . . . . . . . . 2 . . . . . . 
         . . . . . . . . . 2 . . . . . . 
         `],
-    1000,
+    100,
     true
     )
-    tiles.placeOnTile(fertiliser, Bees)
-    tiles.setTileAt(Bees, assets.tile`transparency16`)
+    tiles.placeOnTile(fertiliser, values)
+    tiles.setTileAt(values, assets.tile`transparency16`)
 }
 forever(function () {
     for (let index = 0; index < 4; index++) {
         Hamilton.x += 1
     }
+    pause(2000)
     for (let index = 0; index < 4; index++) {
         Hamilton.x += -1
     }
