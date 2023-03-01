@@ -1,5 +1,6 @@
 namespace SpriteKind {
     export const points = SpriteKind.create()
+    export const Flower = SpriteKind.create()
 }
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile0`, function (sprite, location) {
     game.gameOver(true)
@@ -23,6 +24,31 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.points, function (sprite, otherS
     info.changeScoreBy(1)
     sprites.destroy(otherSprite)
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Flower, function (sprite, otherSprite) {
+    Bees = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 5 5 f 5 f 5 f 5 . . . 
+        . . . . . 5 f 5 f 5 f 5 5 . . . 
+        . . . . . 5 f 5 f 5 f 5 5 . . . 
+        . . . . . 5 f 5 f 5 f 5 5 f . . 
+        . . . . . 5 f 5 f 5 f 5 5 . . . 
+        . . . . . 5 5 f 5 f 5 f 5 . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Enemy)
+    sprites.destroy(otherSprite)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
+    info.changeLifeBy(1)
+    sprites.destroy(otherSprite)
+})
 controller.player3.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Pressed, function () {
     if (Lermi.vy == 0) {
         Lermi.vy = -150
@@ -32,8 +58,13 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
     info.changeLifeBy(-1)
     sprites.destroy(Dermi)
     sprites.destroy(Fermi)
+    sprites.destroy(Lermi)
 })
+let Bees: Sprite = null
+let fertiliser: Sprite = null
+let flowers: Sprite = null
 let Seeds: Sprite = null
+let Hamilton: Sprite = null
 let Lermi: Sprite = null
 let Dermi: Sprite = null
 let Fermi: Sprite = null
@@ -213,24 +244,6 @@ Lermi = sprites.create(img`
     . . . 3 d d d d d d d 3 . . . . 
     . . . d d d d d d d d d . . . . 
     `, SpriteKind.Player)
-let Hamilton = sprites.create(img`
-    . . . . 8 8 8 8 8 8 8 8 . . . . 
-    . . . . 8 1 f 8 8 f 1 8 . . . . 
-    . . . . 8 f 8 5 5 8 f 8 . . . . 
-    . . . . 8 8 8 5 5 8 8 8 . . . . 
-    . . . . . 8 8 8 8 8 8 . . . . . 
-    . . . . 8 8 8 8 8 8 8 8 . . . . 
-    . . . 8 8 8 8 8 8 8 8 8 8 . . . 
-    . . . 8 8 1 1 8 8 1 1 8 8 . . . 
-    . . 8 8 8 8 8 1 1 8 8 8 8 8 . . 
-    . . . 8 8 8 8 8 8 8 8 8 8 . . . 
-    . . . 8 8 8 8 8 8 8 8 8 8 . . . 
-    . . . . 8 8 8 8 8 8 8 8 . . . . 
-    . . . . 8 8 8 8 8 8 8 8 . . . . 
-    . . . . 8 8 8 8 8 8 8 8 . . . . 
-    . . . . . 8 8 8 8 8 8 . . . . . 
-    . . . . . . 8 8 8 8 . . . . . . 
-    `, SpriteKind.Enemy)
 Fermi.setPosition(13, 13)
 Fermi.setPosition(15, 13)
 Hamilton.setPosition(45, 24)
@@ -242,11 +255,11 @@ Fermi.ay = 350
 Dermi.ay = 350
 Lermi.ay = 350
 scene.cameraFollowSprite(Fermi)
-Fermi.sayText("HI!I AM FERMI!", 2000, false)
-Dermi.sayText("HI!I AM DERMI!", 2000, false)
 info.setLife(5)
+info.setScore(0)
+Lermi.setStayInScreen(true)
 Dermi.setStayInScreen(true)
-for (let value of tiles.getTilesByType(assets.tile`myTile2`)) {
+for (let Bees of tiles.getTilesByType(assets.tile`myTile2`)) {
     Seeds = sprites.create(img`
         . . . . . . . f f . . . . . . . 
         . . . . . . e f f e . . . . . . 
@@ -265,6 +278,313 @@ for (let value of tiles.getTilesByType(assets.tile`myTile2`)) {
         . . . e f e f e e f e f e . . . 
         . . . . e f e f f e f e . . . . 
         `, SpriteKind.points)
-    tiles.placeOnTile(Seeds, value)
-    tiles.setTileAt(value, assets.tile`transparency16`)
+    animation.runImageAnimation(
+    Seeds,
+    [img`
+        . . . . . . . f f . . . . . . . 
+        . . . . . e e f f e e . . . . . 
+        . . . e e e f f f f e e e . . . 
+        . . e e f f e f f e f f e e . . 
+        . . e e f e e f f e e f e e . . 
+        . e e f e e f e e f e e f e e . 
+        . e e f e e f e e f e e f e e . 
+        . e e f e e f 1 1 f e e f e e . 
+        . e e f e e f 1 5 f e e f e e . 
+        . e e f e e f e e f e e f e e . 
+        . e e f e e f e e f e e f e e . 
+        . . e f e e f e e f e e f e . . 
+        . . e f e e f e e f e e f e . . 
+        . . . e f e f e e f e f e . . . 
+        . . . e e f e f f e f e e . . . 
+        . . . . . e f f f f e . . . . . 
+        `,img`
+        . . . . . . . f f . . . . . . . 
+        . . . . . . e e e e . . . . . . 
+        . . . . e e e f f e e e . . . . 
+        . . . e e f f e e f f e e . . . 
+        . . . e e f e e e e f e e . . . 
+        . . e e f e e f f e e f e e . . 
+        . . e e f e e f f e e f e e . . 
+        . . e e f e e f f e e f e e . . 
+        . . e e f e e f f e e f e e . . 
+        . . e e f e e f f e e f e e . . 
+        . . e e f e e f f e e f e e . . 
+        . . . e f e e f f e e f e . . . 
+        . . . e f e e f f e e f e . . . 
+        . . . . e f e f f e f e . . . . 
+        . . . . e e f e e f e e . . . . 
+        . . . . . . e f f e . . . . . . 
+        `,img`
+        . . . . . . . f f . . . . . . . 
+        . . . . . . e e f e e . . . . . 
+        . . . . e e e f f e e e . . . . 
+        . . . e e f f e f f f e e . . . 
+        . . . e e f e e f e f e e . . . 
+        . . e e f e e f e e e f e e . . 
+        . . e e f e e f e e e f e e . . 
+        . . e e f e e f 1 e e f e e . . 
+        . . e e f e e f 1 e e f e e . . 
+        . . e e f e e f e e e f e e . . 
+        . . e e f e e f e e e f e e . . 
+        . . . e f e e f e e e f e . . . 
+        . . . e f e e f e e e f e . . . 
+        . . . . e f e f e e f e . . . . 
+        . . . . e e f e f f e e . . . . 
+        . . . . . . e f f e . . . . . . 
+        `,img`
+        . . . . . . . f f . . . . . . . 
+        . . . . . . e e f e e . . . . . 
+        . . . . . e e e e f e e . . . . 
+        . . . . e e f f e f e e . . . . 
+        . . . . e e f e e e e e . . . . 
+        . . . e e f e e f e f e e . . . 
+        . . . e e f e e f e f e e . . . 
+        . . . e e f e e f e f e e . . . 
+        . . . e e f e e f e f e e . . . 
+        . . . e e f e e f e f e e . . . 
+        . . . e e f e e f e f e e . . . 
+        . . . . e f e e f e f e . . . . 
+        . . . . e f e e f e f e . . . . 
+        . . . . . e f e f e e . . . . . 
+        . . . . . e e f e f e . . . . . 
+        . . . . . . . e f f . . . . . . 
+        `,img`
+        . . . . . . . f . . . . . . . . 
+        . . . . . . e f e e . . . . . . 
+        . . . . . e e e f e e . . . . . 
+        . . . . e e f e f e e . . . . . 
+        . . . . e e f e e e e . . . . . 
+        . . . e e f e f e f e e . . . . 
+        . . . e e f e f e f e e . . . . 
+        . . . e e f e f e f e e . . . . 
+        . . . e e f e f e f e e . . . . 
+        . . . e e f e f e f e e . . . . 
+        . . . e e f e f e f e e . . . . 
+        . . . . e f e f e f e . . . . . 
+        . . . . e f e f e f e . . . . . 
+        . . . . . e f f e e . . . . . . 
+        . . . . . e e e f e . . . . . . 
+        . . . . . . . f f . . . . . . . 
+        `,img`
+        . . . . . . . f . . . . . . . . 
+        . . . . . . . e f e . . . . . . 
+        . . . . . . e e e e e . . . . . 
+        . . . . . e e f e e e . . . . . 
+        . . . . . e e f e e e . . . . . 
+        . . . . e e f e f f e e . . . . 
+        . . . . e e f e f f e e . . . . 
+        . . . . e e f e f f e e . . . . 
+        . . . . e e f e f f e e . . . . 
+        . . . . e e f e f f e e . . . . 
+        . . . . e e f e f f e e . . . . 
+        . . . . . e f e f f e . . . . . 
+        . . . . . e f e f f e . . . . . 
+        . . . . . . e f f e . . . . . . 
+        . . . . . . e e e e . . . . . . 
+        . . . . . . . . f . . . . . . . 
+        `],
+    1000,
+    true
+    )
+    tiles.placeOnTile(Seeds, Bees)
+    tiles.setTileAt(Bees, assets.tile`transparency16`)
 }
+for (let Bees of tiles.getTilesByType(assets.tile`myTile3`)) {
+    Hamilton = sprites.create(img`
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        . . . . 8 1 f 8 8 f 1 8 . . . . 
+        . . . . 8 f 8 5 5 8 f 8 . . . . 
+        . . . . 8 8 8 5 5 8 8 8 . . . . 
+        . . . . . 8 8 8 8 8 8 . . . . . 
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        . . . 8 8 8 8 8 8 8 8 8 8 . . . 
+        . . . 8 8 1 1 8 8 1 1 8 8 . . . 
+        . . 8 8 8 8 8 1 1 8 8 8 8 8 . . 
+        . . . 8 8 8 8 8 8 8 8 8 8 . . . 
+        . . . 8 8 8 8 8 8 8 8 8 8 . . . 
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        . . . . 8 8 8 8 8 8 8 8 . . . . 
+        . . . . . 8 8 8 8 8 8 . . . . . 
+        . . . . . . 8 8 8 8 . . . . . . 
+        `, SpriteKind.Enemy)
+    tiles.placeOnTile(Hamilton, Bees)
+    tiles.setTileAt(Bees, assets.tile`transparency16`)
+}
+for (let Bees of tiles.getTilesByType(assets.tile`myTile4`)) {
+    flowers = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 5 . . . 5 . . . . . . 
+        . . . . 5 3 5 5 5 3 5 . . . . . 
+        . . . . . 5 3 1 3 5 . . . . . . 
+        . . . . 5 3 5 5 5 3 5 . . . . . 
+        . . . . . 5 . 7 . 5 . . . . . . 
+        . . . . . . . 7 . . 7 . . . . . 
+        . . . . 7 7 7 7 . 7 7 . . . . . 
+        . . . 7 7 6 6 7 7 7 7 . . . . . 
+        . . 7 7 6 . . 7 7 6 6 . . . . . 
+        . . . . . . . 7 6 . . . . . . . 
+        `, SpriteKind.Flower)
+    tiles.placeOnTile(flowers, Bees)
+    tiles.setTileAt(Bees, assets.tile`transparency16`)
+}
+for (let Bees of tiles.getTilesByType(assets.tile`myTile5`)) {
+    fertiliser = sprites.create(img`
+        . 2 2 2 2 . . . . . . 2 2 2 2 . 
+        . 2 2 2 2 2 . . . . 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 . . 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 . . . 
+        . . . 2 2 2 2 2 2 2 2 2 2 . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . . 2 2 2 2 2 2 2 . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        `, SpriteKind.Food)
+    animation.runImageAnimation(
+    fertiliser,
+    [img`
+        . . 2 2 2 . . . . . . 2 2 2 . . 
+        . 2 2 2 2 2 2 . 2 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 . 2 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 . 2 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
+        . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . . 2 2 2 2 2 2 2 2 2 2 . . . 
+        . . . 2 2 2 2 2 2 2 2 2 2 . . . 
+        . . . 2 2 2 2 2 2 2 2 2 2 . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        `,img`
+        . . . 2 2 2 . . . . 2 2 2 . . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . 2 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . . 2 2 2 2 2 2 2 2 2 2 . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        `,img`
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . . 2 2 . . . . . . . 
+        . . . . . . . . 2 . . . . . . . 
+        . . . . . . . . 2 . . . . . . . 
+        `,img`
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . . 2 . . . . . . 
+        . . . . . . . . . 2 . . . . . . 
+        `,img`
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . 2 2 2 2 2 . . . . . . 
+        . . . . . 2 2 2 2 2 . . . . . . 
+        . . . . . 2 2 2 2 2 . . . . . . 
+        . . . . . 2 2 2 2 2 . . . . . . 
+        . . . . . 2 2 2 2 2 . . . . . . 
+        . . . . . 2 2 2 2 2 . . . . . . 
+        . . . . . 2 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . . 2 . . . . . . 
+        . . . . . . . . . 2 . . . . . . 
+        `,img`
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . . 2 . . . . . . 
+        . . . . . . . . . 2 . . . . . . 
+        `,img`
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . 2 2 . . . . . . 
+        . . . . . . . . . 2 . . . . . . 
+        . . . . . . . . . 2 . . . . . . 
+        `],
+    1000,
+    true
+    )
+    tiles.placeOnTile(fertiliser, Bees)
+    tiles.setTileAt(Bees, assets.tile`transparency16`)
+}
+forever(function () {
+    for (let index = 0; index < 4; index++) {
+        Hamilton.x += 1
+    }
+    for (let index = 0; index < 4; index++) {
+        Hamilton.x += -1
+    }
+})
